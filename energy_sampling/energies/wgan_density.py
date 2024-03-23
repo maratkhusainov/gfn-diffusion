@@ -22,9 +22,9 @@ class WGANdens(BaseSet):
             torch.zeros(2).to(self.device), torch.eye(2).to(self.device))
 
         self.gen_mnist.load_state_dict(torch.load(
-            '/content/gfn_diffusion_test/energy_sampling/energies/mnist_2d_experiments/weights/wgan_2d.ckpt')[0])
+            '/content/gfn-diffusion/energy_sampling/energies/mnist_2d_experiments/weights/wgan_2d.ckpt')[0])
         self.discr_mnist.load_state_dict(torch.load(
-            '/content/gfn_diffusion_test/energy_sampling/energies/energies/mnist_2d_experiments/weights/wgan_2d.ckpt')[1])
+            '/content/gfn-diffusion/energy_sampling/energies/mnist_2d_experiments/weights/wgan_2d.ckpt')[1])
         self.gen_mnist.eval()
         self.discr_mnist.eval()
 
