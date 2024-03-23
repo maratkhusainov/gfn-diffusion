@@ -10,6 +10,7 @@ from langevin import langevin_dynamics
 from models import GFN
 from gflownet_losses import *
 from energies import *
+from energies.wgan_density import WGANdens
 from evaluations import *
 
 import matplotlib.pyplot as plt
@@ -130,13 +131,15 @@ def get_energy():
         energy = EasyFunnel(device=device)
     elif args.energy == 'many_well':
         energy = ManyWell(device=device)
+    elif args.energy == 'wgan':
+        energy = WGANdens(device=device)    
     return energy
 
 
 def plot_step(energy, gfn_model, name):
     if args.energy == 'many_well':
         batch_size = plot_data_size
-        samples = gfn_model.sample(batch_size, energy.log_reward)
+        samples = gfn_model.sample(batch_size, energy.log_reward) # do not understand what means log_reward
 
         vizualizations = viz_many_well(energy, samples)
         fig_samples_x13, ax_samples_x13, fig_kde_x13, ax_kde_x13, fig_contour_x13, ax_contour_x13, fig_samples_x23, ax_samples_x23, fig_kde_x23, ax_kde_x23, fig_contour_x23, ax_contour_x23 = vizualizations
@@ -157,7 +160,7 @@ def plot_step(energy, gfn_model, name):
                 "visualization/samplesx13": wandb.Image(fig_to_image(fig_samples_x13)),
                 "visualization/samplesx23": wandb.Image(fig_to_image(fig_samples_x23))}
 
-    elif energy.data_ndim != 2:
+    elif energy.data_ndim == 2: # was != , made change to run without plots 
         return {}
 
     else:
@@ -273,7 +276,8 @@ def train():
         os.makedirs(name)
 
     energy = get_energy()
-    eval_data = energy.sample(eval_data_size).to(device)
+    # eval data is None in case of WGAN
+    eval_data = None #energy.sample(eval_data_size).to(device)
 
     config = args.__dict__
     config["Experiment"] = "{args.energy}"
